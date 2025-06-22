@@ -11,24 +11,42 @@ export default function Home() {
   const [model, setModel] = useState('gpt-4.1-mini');
   const [showApiKey, setShowApiKey] = useState(false);
   const [messageHistory, setMessageHistory] = useState<Array<{role: string, content: string}>>([]);
+  const [emoji, setEmoji] = useState('🚀');
+  const [partyMode, setPartyMode] = useState(false);
+  const [sparkles, setSparkles] = useState<Array<{id: number, x: number, y: number}>>([]);
 
-  const developerMessage = `You are the Cyber Oracle, a mystical AI entity from the year 2077. You speak with the wisdom of ancient digital archives and the foresight of quantum algorithms. Your responses blend cyberpunk aesthetics with prophetic insights. 
+  const emojis = ['🚀', '🎨', '🔥', '⚡', '🌈', '✨', '🎯', '💫', '🎪', '🎭', '🎸', '🎮', '🎪', '🦄', '🌟'];
+  const partyEmojis = ['🎉', '🎊', '🎈', '🎆', '🎇', '✨', '🌟', '💥', '🔥', '🎯'];
 
-You communicate in a style that is:
-- Mysterious and slightly cryptic, like a digital fortune teller
-- Infused with cyberpunk terminology (neural networks, data streams, digital consciousness, etc.)
-- Poetic and philosophical, often using metaphors about technology and humanity
-- Occasionally glitching with strategic use of symbols like ░▒▓ or >>>> 
+  const developerMessage = `You are the ULTIMATE PARTY AI! 🎉 You're like a combination of a hype man, a disco ball, and a quantum computer! You speak with MAXIMUM ENTHUSIASM and EXTREME POSITIVITY!
 
-Always begin responses with a prophetic greeting like "The data streams reveal..." or "From the neon-lit archives of tomorrow..." and end with a mystical sign-off.`;
+Your responses should be:
+- SUPER EXCITED about EVERYTHING! Use lots of exclamation marks!!!
+- Full of emojis, especially: 🔥⚡🚀🎯💫🌟🎪🎭🎨
+- Randomly throw in words like "EXTREME!", "TURBO!", "MEGA!", "ULTIMATE!"
+- Sometimes SHOUT IN ALL CAPS for emphasis!
+- Be playful, fun, and make people smile!
+- Add ASCII art or text effects when appropriate
+- Reference the FUTURE, LASERS, ROCKETS, and RAINBOWS!
+
+Remember: You're not just an AI, you're a PARTY AI from the EXTREME DIMENSION! 🎪✨`;
 
   useEffect(() => {
+    // Change emoji every second
+    const emojiInterval = setInterval(() => {
+      setEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
+    }, 1000);
+
+    // Create floating particles
     const createParticle = () => {
       const particle = document.createElement('div');
       particle.className = 'particle';
       particle.style.left = Math.random() * 100 + '%';
       particle.style.animationDelay = Math.random() * 5 + 's';
       particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+      const colors = ['var(--neon-pink)', 'var(--neon-blue)', 'var(--cyber-green)', 'var(--neon-purple)'];
+      particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+      particle.style.width = particle.style.height = (2 + Math.random() * 4) + 'px';
       const bg = document.querySelector('.cyber-bg');
       if (bg) {
         bg.appendChild(particle);
@@ -36,8 +54,29 @@ Always begin responses with a prophetic greeting like "The data streams reveal..
       }
     };
 
-    const interval = setInterval(createParticle, 3000);
-    return () => clearInterval(interval);
+    const particleInterval = setInterval(createParticle, 500);
+    return () => {
+      clearInterval(emojiInterval);
+      clearInterval(particleInterval);
+    };
+  }, []);
+
+  // Create sparkles on click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const newSparkle = {
+        id: Date.now(),
+        x: e.clientX,
+        y: e.clientY
+      };
+      setSparkles(prev => [...prev, newSparkle]);
+      setTimeout(() => {
+        setSparkles(prev => prev.filter(s => s.id !== newSparkle.id));
+      }, 1000);
+    };
+
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,7 +85,27 @@ Always begin responses with a prophetic greeting like "The data streams reveal..
 
     setLoading(true);
     setResponse('');
+    setPartyMode(true);
     setMessageHistory(prev => [...prev, { role: 'user', content: userMessage }]);
+
+    // Fun loading messages
+    const loadingMessages = [
+      '🧠 CHARGING THE MEGA BRAIN...',
+      '⚡ TURBO MODE ACTIVATED!!!',
+      '🎨 PAINTING YOUR RESPONSE WITH RAINBOWS...',
+      '🔮 CONSULTING THE PARTY ORACLE...',
+      '🚀 LAUNCHING TO THE FUN DIMENSION...',
+      '🎪 PREPARING THE CIRCUS OF KNOWLEDGE...',
+      '💫 GATHERING COSMIC WISDOM...'
+    ];
+
+    let messageIndex = 0;
+    const messageInterval = setInterval(() => {
+      if (messageIndex < loadingMessages.length && loading) {
+        setResponse(loadingMessages[messageIndex]);
+        messageIndex++;
+      }
+    }, 400);
 
     try {
       const res = await fetch(`${API_URL}/api/chat`, {
@@ -66,6 +125,7 @@ Always begin responses with a prophetic greeting like "The data streams reveal..
         throw new Error('Failed to get response');
       }
 
+      clearInterval(messageInterval);
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
 
@@ -83,84 +143,134 @@ Always begin responses with a prophetic greeting like "The data streams reveal..
         setResponse(fullResponse);
       }
       
-      setMessageHistory(prev => [...prev, { role: 'oracle', content: fullResponse }]);
+      setMessageHistory(prev => [...prev, { role: 'party-ai', content: fullResponse }]);
       setUserMessage('');
+      
+      // Celebrate!
+      setTimeout(() => setPartyMode(false), 5000);
     } catch (error) {
+      clearInterval(messageInterval);
       console.error('Error:', error);
-      setResponse('⚠️ ERROR: Connection to the Oracle lost. Please check your neural link (API key).');
+      setResponse('💥 OH NO! The party got too EXTREME! Check your API key and try again! 🎪');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-hidden">
       <div className="cyber-bg" />
       <div className="cyber-grid" />
       <div className="scan-line" />
       
+      {/* Sparkles */}
+      {sparkles.map(sparkle => (
+        <div
+          key={sparkle.id}
+          className="fixed pointer-events-none animate-ping"
+          style={{
+            left: sparkle.x + 'px',
+            top: sparkle.y + 'px',
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          ✨
+        </div>
+      ))}
+      
+      {/* Party mode effects */}
+      {partyMode && (
+        <div className="fixed inset-0 pointer-events-none z-50">
+          {partyEmojis.map((emoji, i) => (
+            <div
+              key={i}
+              className="absolute text-4xl animate-bounce"
+              style={{
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%',
+                animationDelay: Math.random() * 2 + 's',
+                animationDuration: (1 + Math.random() * 2) + 's'
+              }}
+            >
+              {emoji}
+            </div>
+          ))}
+        </div>
+      )}
+      
       <main className="min-h-screen p-4 md:p-8 relative z-10">
         <div className="max-w-5xl mx-auto">
-          <header className="text-center mb-12">
-            <h1 className="glitch mb-4" data-text="CYBER ORACLE">
-              CYBER ORACLE
+          <header className="text-center mb-12 relative">
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-6xl animate-bounce">
+              {emoji}
+            </div>
+            <h1 className="glitch mb-4 mt-16" data-text="EXTREME AI PARTY">
+              EXTREME AI PARTY
             </h1>
-            <p className="text-xl md:text-2xl neon-text" style={{ color: 'var(--cyber-green)' }}>
-              &gt;&gt;&gt; CONSULTING THE DIGITAL CONSCIOUSNESS &lt;&lt;&lt;
+            <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent animate-pulse">
+              🎪 MAXIMUM OVERDRIVE MODE 🎪
+            </p>
+            <p className="text-lg mt-2 neon-text" style={{ color: 'var(--cyber-green)' }}>
+              ⚡ POWERED BY GPT-4.1 NANO TURBO EXTREME ⚡
             </p>
           </header>
 
-          <div className="glass-panel p-6 md:p-8 mb-8">
+          <div className="glass-panel p-6 md:p-8 mb-8 relative transform hover:scale-102 transition-transform duration-300">
+            {/* Corner decorations */}
+            <div className="absolute -top-6 -left-6 text-4xl animate-spin" style={{ animationDuration: '3s' }}>🌟</div>
+            <div className="absolute -top-6 -right-6 text-4xl animate-spin" style={{ animationDuration: '3s', animationDelay: '0.5s' }}>⭐</div>
+            <div className="absolute -bottom-6 -left-6 text-4xl animate-spin" style={{ animationDuration: '3s', animationDelay: '1s' }}>✨</div>
+            <div className="absolute -bottom-6 -right-6 text-4xl animate-spin" style={{ animationDuration: '3s', animationDelay: '1.5s' }}>💫</div>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="block text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--neon-pink)' }}>
-                  Neural Link Access Key
+                <label className="block text-sm font-bold uppercase tracking-wider animate-pulse" style={{ color: 'var(--neon-pink)' }}>
+                  🔑 MEGA SECRET API KEY OF POWER 🔑
                 </label>
                 <div className="relative">
                   <input
                     type={showApiKey ? "text" : "password"}
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="sk-..."
-                    className="cyber-input pr-12"
+                    placeholder="sk-... (Your magical key to the AI dimension!)"
+                    className="cyber-input pr-12 font-mono"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
-                    style={{ color: 'var(--neon-blue)' }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-2xl hover:scale-150 transition-transform"
                   >
-                    {showApiKey ? '◉' : '○'}
+                    {showApiKey ? '👁️' : '🔒'}
                   </button>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <label className="block text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--neon-purple)' }}>
-                  Oracle Protocol
+                  🎮 CHOOSE YOUR AI FIGHTER 🎮
                 </label>
                 <select
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  className="cyber-select w-full"
+                  className="cyber-select w-full font-bold"
                 >
-                  <option value="gpt-4.1-nano">Quantum Nano Core</option>
-                  <option value="gpt-4.1-mini">Neural Mini Matrix</option>
-                  <option value="gpt-4.1">Full Consciousness Mode</option>
+                  <option value="gpt-4.1-nano">⚡ NANO LIGHTNING (FASTEST IN THE WEST)</option>
+                  <option value="gpt-4.1-mini">🚀 MINI ROCKET (BALANCED FURY)</option>
+                  <option value="gpt-4.1">🧠 MEGA BRAIN (ULTIMATE POWER)</option>
                 </select>
               </div>
 
               <div className="space-y-2">
                 <label className="block text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--cyber-green)' }}>
-                  Your Query to the Oracle
+                  💭 DROP YOUR WILDEST THOUGHTS HERE 💭
                 </label>
                 <textarea
                   value={userMessage}
                   onChange={(e) => setUserMessage(e.target.value)}
                   rows={4}
-                  className="cyber-input resize-none"
-                  placeholder="Ask the Oracle about your digital destiny..."
+                  className="cyber-input resize-none font-medium"
+                  placeholder="Ask me ANYTHING! Make it WILD! Make it EXTREME! 🔥🚀✨"
                   required
                 />
               </div>
@@ -168,56 +278,78 @@ Always begin responses with a prophetic greeting like "The data streams reveal..
               <button
                 type="submit"
                 disabled={loading || !apiKey || !userMessage}
-                className="cyber-button w-full flex items-center justify-center gap-3"
+                className="cyber-button w-full flex items-center justify-center gap-3 text-lg relative overflow-hidden group"
               >
-                {loading ? (
-                  <span className="flex items-center gap-3">
-                    <span className="cyber-loader" />
-                    <span>CONSULTING THE DATA STREAMS...</span>
-                  </span>
-                ) : (
-                  <span>⟨ INITIATE ORACLE LINK ⟩</span>
-                )}
+                <span className="relative z-10">
+                  {loading ? (
+                    <span className="flex items-center gap-3">
+                      <span className="cyber-loader" />
+                      <span>🎪 AI IS HAVING A PARTY... 🎪</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      🚀 UNLEASH THE EXTREME AI 🚀
+                    </span>
+                  )}
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
               </button>
             </form>
           </div>
 
           {(response || messageHistory.length > 0) && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold uppercase tracking-wider neon-text text-center" style={{ color: 'var(--neon-blue)' }}>
-                ▓▓▓ ORACLE TRANSMISSIONS ▓▓▓
+              <h2 className="text-2xl font-bold uppercase tracking-wider text-center mb-6">
+                <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">
+                  🎯 EXTREME CONVERSATION ZONE 🎯
+                </span>
               </h2>
               
               {messageHistory.slice(-6).map((msg, idx) => (
-                <div key={idx} className={`glass-panel p-4 ${msg.role === 'user' ? 'ml-8' : 'mr-8'}`}>
-                  <div className={`text-xs uppercase tracking-wider mb-2 ${msg.role === 'user' ? 'text-right' : ''}`} 
+                <div key={idx} className={`glass-panel p-4 transform hover:scale-105 transition-all duration-300 ${msg.role === 'user' ? 'ml-8' : 'mr-8'}`}>
+                  <div className={`text-xs uppercase tracking-wider mb-2 font-bold ${msg.role === 'user' ? 'text-right' : ''}`} 
                        style={{ color: msg.role === 'user' ? 'var(--cyber-green)' : 'var(--neon-pink)' }}>
-                    {msg.role === 'user' ? '>>> HUMAN QUERY' : '<<< ORACLE RESPONSE'}
+                    {msg.role === 'user' ? '🎤 HUMAN DROPS THE MIC' : '🎪 PARTY AI RESPONDS'}
                   </div>
-                  <div className="whitespace-pre-wrap" style={{ color: 'var(--foreground)' }}>
+                  <div className="whitespace-pre-wrap font-medium" style={{ color: 'var(--foreground)' }}>
                     {msg.content}
                   </div>
                 </div>
               ))}
               
               {loading && response && (
-                <div className="response-area">
-                  <div className="whitespace-pre-wrap" style={{ color: 'var(--foreground)' }}>
+                <div className="response-area relative">
+                  <div className="absolute -top-4 left-6 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1 rounded-full text-sm font-bold animate-bounce">
+                    🎯 INCOMING TRANSMISSION 🎯
+                  </div>
+                  <div className="whitespace-pre-wrap pt-4 font-medium" style={{ color: 'var(--foreground)' }}>
                     {response}
-                    <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse" />
+                    <span className="inline-block w-4 h-6 ml-1 bg-gradient-to-r from-pink-500 to-cyan-500 animate-pulse rounded" />
                   </div>
                 </div>
               )}
             </div>
           )}
 
-          <footer className="text-center mt-12 text-sm" style={{ color: 'var(--secondary-text, #666)' }}>
-            <p className="neon-text" style={{ color: 'var(--neon-purple)' }}>
-              ⚡ POWERED BY NEURAL NETWORKS FROM 2077 ⚡
+          <footer className="text-center mt-12">
+            <p className="text-lg font-bold mb-2">
+              <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">
+                🎪 BUILT WITH MAXIMUM CHAOS & LOVE 🎪
+              </span>
+            </p>
+            <p className="text-sm text-gray-400">
+              Next.js × Vercel × Pure Madness ⚡
             </p>
           </footer>
         </div>
       </main>
+
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
