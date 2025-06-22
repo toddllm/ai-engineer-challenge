@@ -62,3 +62,15 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Security - NEVER commit these
+.env
+.env.*
+*.key
+*.pem
+auto-deploy.sh
+deploy-local.sh
+*-token.sh
+*-secret.sh
+VERCEL_TOKEN
+OPENAI_API_KEY
