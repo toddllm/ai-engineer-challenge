@@ -159,9 +159,34 @@ Remember: You're not just an AI, you're a PARTY AI from the EXTREME DIMENSION! ð
 
   return (
     <div className="min-h-screen overflow-hidden">
-      <div className="cyber-bg" />
+      <div className="cyber-bg">
+        {/* Additional floating orbs */}
+        <div className="absolute w-96 h-96 rounded-full blur-3xl opacity-30 animate-pulse"
+             style={{
+               background: 'radial-gradient(circle, #ff006e, transparent)',
+               top: '20%',
+               left: '50%',
+               transform: 'translate(-50%, -50%)',
+               animationDuration: '4s'
+             }} />
+        <div className="absolute w-64 h-64 rounded-full blur-3xl opacity-40 animate-pulse"
+             style={{
+               background: 'radial-gradient(circle, #8338ec, transparent)',
+               bottom: '30%',
+               left: '20%',
+               animationDuration: '6s',
+               animationDelay: '1s'
+             }} />
+        <div className="absolute w-80 h-80 rounded-full blur-3xl opacity-30"
+             style={{
+               background: 'radial-gradient(circle, #00ff88, transparent)',
+               top: '60%',
+               right: '10%',
+               animation: 'float-orb 15s ease-in-out infinite',
+               animationDelay: '2s'
+             }} />
+      </div>
       <div className="cyber-grid" />
-      <div className="scan-line" />
       
       {/* Sparkles */}
       {sparkles.map(sparkle => (
