@@ -331,14 +331,32 @@ Remember: You're not just an AI, you're a PARTY AI from the EXTREME DIMENSION! �
             </div>
           )}
 
-          <footer className="text-center mt-12">
-            <p className="text-lg font-bold mb-2">
+          <footer className="text-center mt-12 relative">
+            <div className="absolute inset-x-0 bottom-0 h-20 overflow-hidden pointer-events-none">
+              {['🚀', '⚡', '🎨', '🔥', '💫', '🌈', '✨', '🎯'].map((emoji, i) => (
+                <div
+                  key={i}
+                  className="absolute text-2xl"
+                  style={{
+                    left: `${i * 12.5}%`,
+                    animation: `float-wave 8s ease-in-out infinite`,
+                    animationDelay: `${i * 0.5}s`
+                  }}
+                >
+                  {emoji}
+                </div>
+              ))}
+            </div>
+            <p className="text-lg font-bold mb-2 relative z-10">
               <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">
                 🎪 BUILT WITH MAXIMUM CHAOS & LOVE 🎪
               </span>
             </p>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 relative z-10">
               Next.js × Vercel × Pure Madness ⚡
+            </p>
+            <p className="text-xs text-gray-500 mt-2 animate-pulse">
+              v2.0 - NOW WITH 200% MORE PARTY! 🎉
             </p>
           </footer>
         </div>
@@ -348,6 +366,20 @@ Remember: You're not just an AI, you're a PARTY AI from the EXTREME DIMENSION! �
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        @keyframes float-wave {
+          0%, 100% { 
+            transform: translateY(0) scale(1);
+          }
+          25% { 
+            transform: translateY(-20px) scale(1.1) rotate(10deg);
+          }
+          50% { 
+            transform: translateY(0) scale(1);
+          }
+          75% { 
+            transform: translateY(-10px) scale(1.05) rotate(-10deg);
+          }
         }
       `}</style>
     </div>
